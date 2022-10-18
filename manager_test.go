@@ -103,11 +103,24 @@ func TestFind(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	t.Run("Should remove node", func(t *testing.T) {
-		_, ok := manager.GetNode("test2")
-		if !ok {
-			t.Fail()
-			return
-		}
-	})
+	_, ok := manager.GetNode("test2")
+	if !ok {
+		t.Fail()
+		return
+	}
+
+	manager.Remove("test2")
+	_, ok = manager.GetNode("test2")
+	if ok {
+		t.Fail()
+		return
+	}
+
+	if manager.Count() != 5 {
+		t.Fail()
+	}
+
+	if manager.Slots() != 50 {
+		t.Fail()
+	}
 }
