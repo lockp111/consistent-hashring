@@ -1,2 +1,2 @@
-# consistent-hashring
+# consistent hashring
 consistent hashring for golang
