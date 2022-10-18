@@ -23,29 +23,6 @@ func init() {
 	}
 }
 
-func TestWeight(t *testing.T) {
-	t.Run("Should get replicas count", func(t *testing.T) {
-		count := manager.hashRing.Count()
-		if count != 6*10 {
-			t.Fail()
-		}
-	})
-
-	t.Run("Should change replicas count", func(t *testing.T) {
-		node, ok := manager.GetNode("test3")
-		if !ok {
-			t.Fail()
-			return
-		}
-
-		node.SetWeight(10)
-		count := manager.hashRing.Count()
-		if count != 150 {
-			t.Fail()
-		}
-	})
-}
-
 func TestFind(t *testing.T) {
 	t.Run("Should find current node", func(t *testing.T) {
 		node, ok := manager.FindOne("test1-0")
@@ -102,7 +79,35 @@ func TestFind(t *testing.T) {
 	})
 }
 
+func TestWeight(t *testing.T) {
+	t.Run("Should get replicas count", func(t *testing.T) {
+		count := manager.hashRing.Count()
+		if count != 6*10 {
+			t.Fail()
+		}
+	})
+
+	t.Run("Should change replicas count", func(t *testing.T) {
+		node, ok := manager.GetNode("test3")
+		if !ok {
+			t.Fail()
+			return
+		}
+
+		manager.Remove(node.GetKey())
+		node.SetWeight(10)
+		manager.Add(node)
+
+		count := manager.hashRing.Count()
+		if count != 150 {
+			t.Fail()
+		}
+	})
+}
+
 func TestRemove(t *testing.T) {
+	total := manager.Slots()
+
 	_, ok := manager.GetNode("test2")
 	if !ok {
 		t.Fail()
@@ -120,7 +125,7 @@ func TestRemove(t *testing.T) {
 		t.Fail()
 	}
 
-	if manager.Slots() != 50 {
+	if manager.Slots() != total-10 {
 		t.Fail()
 	}
 }

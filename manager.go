@@ -27,7 +27,6 @@ func (m *NodeManager[T]) Add(node *Node[T]) {
 	m.mux.Lock()
 	defer m.mux.Unlock()
 
-	node.manager = m
 	m.nodes[node.key] = *node
 	m.hashRing.Add(node.Virtuals(m.replicas)...)
 }

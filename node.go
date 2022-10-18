@@ -7,10 +7,9 @@ import (
 )
 
 type Node[T any] struct {
-	Data    T
-	manager *NodeManager[T]
-	key     string
-	weight  int
+	Data   T
+	key    string
+	weight int
 }
 
 func NewNode[T any](key string, data T) *Node[T] {
@@ -36,13 +35,15 @@ func (n *Node[T]) Virtuals(replicas int) []hashring.Slot[T] {
 
 // SetWeight
 func (n *Node[T]) SetWeight(w int) {
-	if n.manager == nil {
-		n.weight = w
-		return
-	}
-
-	// remove old node
-	n.manager.Remove(n.key)
 	n.weight = w
-	n.manager.Add(n)
+}
+
+// GetWeight
+func (n *Node[T]) GetWeight() int {
+	return n.weight
+}
+
+// GetKey
+func (n *Node[T]) GetKey() string {
+	return n.key
 }
