@@ -12,6 +12,7 @@ func main(){
         Host string
         Name string
     }
+    // new manager and set base virtual node count for every node
     manager = NewManager[NodeInfo](100)
 }
 ```
@@ -25,6 +26,7 @@ func main(){
     }
 
     node := NewNode(node.Name, nodeInfo)
+    // change weight, default 1
     node.SetWeight(10)
     manager.Add(node)
 
