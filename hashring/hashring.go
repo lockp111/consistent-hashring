@@ -43,6 +43,23 @@ func (h *HashRing[T]) get(index int) (Slot[T], bool) {
 	return slot, true
 }
 
+func (h *HashRing[T]) remove(key string) {
+	hashed := Hash(key)
+	_, ok := h.slotMap[hashed]
+	if !ok {
+		return
+	}
+	if len(h.slots) == 1 {
+		h.slotMap = make(map[uint32]Slot[T])
+		h.slots = make([]uint32, 0, 2048)
+		return
+	}
+
+	index := h.find(hashed)
+	h.slots = append(h.slots[:index], h.slots[index+1:]...)
+	delete(h.slotMap, hashed)
+}
+
 // UnsortAdd slots to hashring, but no sort
 func (h *HashRing[T]) UnsortAdd(slots ...Slot[T]) {
 	for _, slot := range slots {
@@ -83,22 +100,11 @@ func (h *HashRing[T]) Get(key string) (Slot[T], bool) {
 	return h.get(index)
 }
 
-// Remove slot by key
-func (h *HashRing[T]) Remove(key string) {
-	hashed := Hash(key)
-	_, ok := h.slotMap[hashed]
-	if !ok {
-		return
+// Remove slot by keys
+func (h *HashRing[T]) Remove(keys ...string) {
+	for _, key := range keys {
+		h.remove(key)
 	}
-	if len(h.slots) == 1 {
-		h.slotMap = make(map[uint32]Slot[T])
-		h.slots = make([]uint32, 0, 2048)
-		return
-	}
-
-	index := h.find(hashed)
-	h.slots = append(h.slots[:index], h.slots[index+1:]...)
-	delete(h.slotMap, hashed)
 }
 
 // ForEach hashring

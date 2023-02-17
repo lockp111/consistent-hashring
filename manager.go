@@ -1,7 +1,6 @@
 package hashring
 
 import (
-	"strconv"
 	"sync"
 
 	"github.com/lockp111/consistent-hashring/hashring"
@@ -66,10 +65,7 @@ func (m *NodeManager[T]) Remove(nodeKey string) {
 	}
 
 	delete(m.nodes, nodeKey)
-	total := node.weight * m.replicas
-	for i := 0; i < total; i++ {
-		m.hashRing.Remove(node.key + "-" + strconv.FormatInt(int64(i), 10))
-	}
+	m.hashRing.Remove(node.VirtualKeys(m.replicas)...)
 }
 
 // FindOne returns hashring slot by key

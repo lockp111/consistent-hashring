@@ -25,7 +25,7 @@ func init() {
 
 func TestFind(t *testing.T) {
 	t.Run("Should find current node", func(t *testing.T) {
-		node, ok := manager.FindOne("test1-0")
+		node, ok := manager.FindOne("test1#0")
 		if !ok {
 			t.Fail()
 			return

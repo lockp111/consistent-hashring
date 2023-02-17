@@ -20,6 +20,10 @@ func NewNode[T any](key string, data T) *Node[T] {
 	}
 }
 
+func (n *Node[T]) virtualKey(index int) string {
+	return n.key + "#" + strconv.FormatInt(int64(index), 10)
+}
+
 // Virtuals returns virtual nodes
 func (n *Node[T]) Virtuals(replicas int) []hashring.Slot[T] {
 	var (
@@ -27,10 +31,22 @@ func (n *Node[T]) Virtuals(replicas int) []hashring.Slot[T] {
 		slots = make([]hashring.Slot[T], 0, total)
 	)
 	for i := 0; i < total; i++ {
-		key := n.key + "-" + strconv.FormatInt(int64(i), 10)
+		key := n.virtualKey(i)
 		slots = append(slots, hashring.NewSlot(key, n.Data))
 	}
 	return slots
+}
+
+// VirtualKeys returns virtual keys
+func (n *Node[T]) VirtualKeys(replicas int) []string {
+	var (
+		total = n.weight * replicas
+		keys  = make([]string, 0, total)
+	)
+	for i := 0; i < total; i++ {
+		keys = append(keys, n.virtualKey(i))
+	}
+	return keys
 }
 
 // SetWeight
